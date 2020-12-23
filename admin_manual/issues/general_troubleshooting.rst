@@ -268,7 +268,24 @@ document root of your Web server and add the following lines::
       RewriteRule ^\.well-known/caldav /nextcloud/remote.php/dav [R=301,L]
     </IfModule>
 
-Make sure to change /nextcloud to the actual subfolder your Nextcloud instance is running in.
+Make sure to change /nextcloud to the actual subfolder your Nextcloud instance is running in. Also, edit or create the .htaccess file in the web browsers document root /var/www/html/ and add the following lines:
+
+   <IfModule mod_rewrite.c>
+        RewriteEngine On
+        RewriteRule ^\.well-known/host-meta /nextcloud/public.php?service=host-meta [QSA,L]
+        RewriteRule ^\.well-known/host-meta\.json /nextcloud/public.php?service=host-meta-json [QSA,L]
+        RewriteRule ^\.well-known/webfinger /nextcloud/public.php?service=webfinger [QSA,L]
+        RewriteRule ^\.well-known/carddav /nextcloud/remote.php/dav/ [R=301,L]
+        RewriteRule ^\.well-known/caldav /nextcloud/remote.php/dav/ [R=301,L]
+   </IfModule>
+   
+To give access to that file, add the following lines to the virtual host, either in the /etc/apache2/sites-enabled/default-ssl.conf or /etc/apache2/sites-enabled/nextcloud.conf:
+
+   <Directory /var/www/>
+	   Options Indexes FollowSymLinks
+	   AllowOverride All
+	   Require all granted
+   </Directory>
 
 If you are running NGINX, make sure ``location = /.well-known/carddav {`` and ``location = /.well-known/caldav {`` are properly configured as described in :doc:`../installation/nginx`, adapt to use a subfolder if necessary. 
 
